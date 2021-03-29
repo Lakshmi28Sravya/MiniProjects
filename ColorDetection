@@ -1,0 +1,38 @@
+from pandas import *
+from numpy import *
+import cv2
+
+path=r"C:\Users\hp\Downloads\colors.csv"
+index=["color","color_name","hex","R","G","B"]
+data=read_csv(path,names=index)
+
+def find_color(R,G,B):
+    minimum = 10000
+    for i in range(len(data)):
+        d = abs(R- int(data.loc[i,"R"])) + abs(G- int(data.loc[i,"G"]))+ abs(B- int(data.loc[i,"B"]))
+        if(d<=minimum):
+            minimum = d
+            cname = data.loc[i,"color_name"]
+    return cname
+
+def click_mouse(event,x,y,flag,param):
+    if event==cv2.EVENT_LBUTTONDOWN:
+        text=str(x)+','+str(y)
+        font=cv2.FONT_HERSHEY_COMPLEX
+        cv2.putText(img,text,(x,y),font,1,(0,255,0),2)
+        cv2.imshow('image', img)
+    if event==cv2.EVENT_RBUTTONDOWN:
+        b=img[y,x,0]
+        g=img[y,x,1]
+        r=img[y,x,2]
+        text=find_color(r,g,b)
+        font=cv2.FONT_HERSHEY_COMPLEX
+        cv2.putText(img,text,(x,y),font,1,(255,255,0),2)
+        cv2.imshow('image', img)
+
+
+path=r"C:\Users\HP\PycharmProjects/colorbg.jpg"
+img=cv2.imread(path)
+cv2.imshow('image',img)
+cv2.setMouseCallback('image',click_mouse)
+cv2.waitKey(0)
